@@ -176,3 +176,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypircapp/model-final/model.safetensors
+app/frontend/index.html
+app/frontend/script.js
+app/frontend/style.css
+backend/gpt-augment/gpt-paraphrasing.py
+backend/gpt-filter-sentiment/gpt-filter-sentiment.py
+frontend/index.html
+frontend/script.js
+frontend/style.css

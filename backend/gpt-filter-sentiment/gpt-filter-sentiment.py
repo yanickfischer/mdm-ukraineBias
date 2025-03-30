@@ -1,15 +1,24 @@
-import os, time, json
+"""
+Dieses Modul filtert und labelt Tweets mithilfe von GPT-3.5-Turbo.
+Es extrahiert relevante Inhalte, klassifiziert sie nach geopolitischer Haltung,
+und speichert das Ergebnis in einer MongoDB-Collection.
+"""
+
+import os
+import time
+import json
+import logging
+
 import pandas as pd
 from tqdm import tqdm
 from pymongo import MongoClient
 from openai import OpenAI
 from dotenv import load_dotenv
-import logging
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
-BATCH_SIZE = int(os.getenv("GPT_BATCH_SIZE", 10))
-SLEEP_TIME = float(os.getenv("GPT_SLEEP_TIME", 1.5))
+BATCH_SIZE = int(os.getenv("GPT_BATCH_SIZE", "10"))
+SLEEP_TIME = float(os.getenv("GPT_SLEEP_TIME", "1.5"))
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -27,16 +36,17 @@ pipeline = [
 cursor = collection.aggregate(pipeline)
 df = pd.DataFrame(list(cursor))
 df = df[df['text'].notnull()].reset_index(drop=True)
-logging.info(f"📥 Texte geladen: {len(df)}")
+logging.info("📥 Texte geladen: %d", len(df))
 
 def gpt_filter_relevant(texts):
+    """Filtert irrelevante Tweets aus einer Liste von Texten mittels GPT."""
     prompt = (
         "Du bekommst eine Liste mit Social Media Texten. Bitte gib nur diejenigen zurück, die sich thematisch mit dem Krieg zwischen Russland und der Ukraine, der Interaktion zwischen europäischen Staten mit dem Krieg in der Ukraine oder auch der US-Regierung im Kontext des Krieges in der Ukraine oder der Beziehung zu Russland beschäftigen \n\n"
         "Gib die Antwort als Liste von JSON-Objekten im Format:\n{\"text\": \"...\"}\n\n"
         "Texte:\n"
     )
-    for i, t in enumerate(texts):
-        prompt += f"{i+1}. {t}\n"
+    for text_idx, t in enumerate(texts):
+        prompt += f"{text_idx+1}. {t}\n"
 
     try:
         response = client_openai.chat.completions.create(
@@ -46,15 +56,16 @@ def gpt_filter_relevant(texts):
         )
         return response.choices[0].message.content
     except Exception as e:
-        logging.info("❌ Fehler beim Filtern:", e)
+        logging.info("❌ Fehler beim Filtern: %s", e)
         return None
 
 def filter_relevant_texts(df, batch_size=BATCH_SIZE):
+    """Filtert relevante Texte aus einem DataFrame."""
     relevant = []
     total_checked = 0
 
-    for i in tqdm(range(0, len(df), batch_size), desc="🔍 Relevanz filtern"):
-        texts = df.iloc[i:i+batch_size]["text"].tolist()
+    for batch_idx in tqdm(range(0, len(df), batch_size), desc="🔍 Relevanz filtern"):
+        texts = df.iloc[batch_idx:batch_idx+batch_size]["text"].tolist()
         result = gpt_filter_relevant(texts)
         total_checked += len(texts)
 
@@ -64,11 +75,11 @@ def filter_relevant_texts(df, batch_size=BATCH_SIZE):
                 filtered_batch = [p for p in parsed if isinstance(p, dict) and "text" in p]
                 relevant.extend(filtered_batch)
             except Exception as e:
-                logging.info("⚠️ Fehler beim Parsen:", e)
+                logging.info("⚠️ Fehler beim Parsen: %s", e)
                 logging.info(result)
         time.sleep(SLEEP_TIME)
 
-    logging.info(f"✅ Geprüft: {total_checked}, Relevant: {len(relevant)}, Ausgeschieden: {total_checked - len(relevant)}")
+    logging.info("✅ Geprüft: %d, Relevant: %d, Ausgeschieden: %d", total_checked, len(relevant), total_checked - len(relevant))
     return pd.DataFrame(relevant)
 
 # Anwenden
@@ -77,14 +88,15 @@ df = df_relevant.copy().reset_index(drop=True)
 df.to_json(os.path.join(OUTPUT_DIR, "filtered_relevant_texts.json"), orient="records", indent=2)
 
 def gpt_label_batch(texts):
+    """Labelt Texte basierend auf ihrer geopolitischen Haltung."""
     prompt = (
         "Bitte klassifiziere die folgenden Texte auf Basis ihrer geopolitischen Haltung:\n"
         "0 = Pro-Russland\n1 = Neutral\n2 = Pro-Ukraine\n\n"
         "Gib die Antwort als Liste von JSON-Objekten im Format: {\"text\": \"…\", \"label\": 0}\n\n"
         "Texte:\n"
     )
-    for i, t in enumerate(texts):
-        prompt += f"{i+1}. {t}\n"
+    for text_idx, t in enumerate(texts):
+        prompt += f"{text_idx+1}. {t}\n"
 
     try:
         response = client_openai.chat.completions.create(
@@ -94,15 +106,15 @@ def gpt_label_batch(texts):
         )
         return response.choices[0].message.content
     except Exception as e:
-        logging.info("❌ GPT API Fehler:", e)
+        logging.info("❌ GPT API Fehler: %s", e)
         return None
 
 # Sentiment Labeling starten
 batch_size = BATCH_SIZE
 results = []
 
-for i in tqdm(range(0, len(df), batch_size), desc="🏷 Sentiment Labeling"):
-    batch = df.iloc[i:i+batch_size]['text'].tolist()
+for batch_idx in tqdm(range(0, len(df), batch_size), desc="🏷 Sentiment Labeling"):
+    batch = df.iloc[batch_idx:batch_idx+batch_size]['text'].tolist()
     result = gpt_label_batch(batch)
 
     if result:
@@ -111,7 +123,7 @@ for i in tqdm(range(0, len(df), batch_size), desc="🏷 Sentiment Labeling"):
             valid = [r for r in parsed if isinstance(r, dict) and "text" in r and "label" in r]
             results.extend(valid)
         except Exception as e:
-            logging.info("⚠️ Parsing-Fehler bei GPT Antwort:", e)
+            logging.info("⚠️ Parsing-Fehler bei GPT Antwort: %s", e)
             logging.info(result)
     time.sleep(SLEEP_TIME)
 
@@ -124,4 +136,4 @@ target_collection = mongo_client["ukraineBiasDB"]["labelled_tweets_training"]
 docs = df_out.to_dict(orient="records")
 if docs:
     target_collection.insert_many(docs)
-logging.info(f"✅ {len(docs)} gelabelte Dokumente gespeichert in 'labelled_tweets_training'.")
+logging.info("✅ %d gelabelte Dokumente gespeichert in 'labelled_tweets_training'.", len(docs))
