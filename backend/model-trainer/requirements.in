@@ -1,0 +1,17 @@
+accelerate==1.5.2
+backports.tarfile==1.2.0
+evaluate==0.4.3
+flask==3.1.0
+importlib-metadata==8.0.0
+ipykernel==6.29.5
+jaraco.collections==5.1.0
+ntscraper==0.3.17
+openai==1.68.2
+pip-chill==1.0.3
+pip-tools==7.4.1
+pymongo==4.11.3
+python-dotenv==1.0.1
+scikit-learn==1.6.1
+seaborn==0.13.2
+tomli==2.0.1
+transformers==4.50.0
