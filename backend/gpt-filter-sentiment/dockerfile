@@ -1,0 +1,17 @@
+# 🐍 1. Python-Basisimage
+FROM python:3.12-slim
+
+# 📁 2. Arbeitsverzeichnis im Container
+WORKDIR /app
+
+# 📦 3. Projektdateien ins Image kopieren
+COPY . .
+
+# 🛠️ 4. Abhängigkeiten installieren
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 🔒 5. Optional: Tokenizer-Warnung deaktivieren
+ENV TOKENIZERS_PARALLELISM=false
+
+# 🚀 6. Standard-Ausführung: dein Hauptskript
+CMD ["python", "gpt-filter-sentiment.py"]
