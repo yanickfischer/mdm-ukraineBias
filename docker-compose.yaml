@@ -52,9 +52,7 @@ services:
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
   twitter-scraper:
-    build:
-      context: ./backend/twitter-scraper
-      dockerfile: dockerfile
+    build: ./backend/twitter-scraper
     container_name: twitter-scraper
     depends_on:
       - mongo
@@ -63,6 +61,22 @@ services:
       MONGO_URI: ${MONGO_URI}
       AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
       NITTER_INSTANCE: ${NITTER_INSTANCE}
+
+  app:
+    build: ./app
+    container_name: app
+    depends_on:
+      - mongo
+    ports:
+      - "5000:5000"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_URI: ${MONGO_URI}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      NITTER_INSTANCE: ${NITTER_INSTANCE}
+      MODEL_PATH: ${MODEL_PATH}
+      GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
+      GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
 volumes:
   mongo-data:
