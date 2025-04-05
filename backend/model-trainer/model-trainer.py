@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 from pymongo import MongoClient
-from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
@@ -10,9 +9,11 @@ import logging
 
 # %%
 # 🔌 MongoDB laden
-load_dotenv()
 logging.basicConfig(level=logging.INFO)
-client = MongoClient(os.getenv("MONGO_URI"))
+mongo_uri = os.environ.get("MONGO_URI")
+if not mongo_uri:
+    raise RuntimeError("❌ MONGO_URI nicht gesetzt – bitte via Compose oder Azure bereitstellen.")
+client = MongoClient(mongo_uri)
 collection = client["ukraineBiasDB"]["labelled_augmentedCount_tweets_training"]
 data = pd.DataFrame(list(collection.find({"label": {"$in": [0, 1, 2]}})))
 data = data[["text", "label"]].dropna().reset_index(drop=True)

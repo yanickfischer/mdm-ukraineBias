@@ -13,9 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 from pymongo import MongoClient
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
 logging.basicConfig(level=logging.INFO)
 BATCH_SIZE = int(os.getenv("GPT_BATCH_SIZE", "10"))
 SLEEP_TIME = float(os.getenv("GPT_SLEEP_TIME", "1.5"))

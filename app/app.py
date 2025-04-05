@@ -3,39 +3,30 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 from pathlib import Path
 from pymongo import MongoClient
-from dotenv import load_dotenv
 import os
 import logging
 
-load_dotenv()
 logging.basicConfig(level=logging.INFO)
-client = MongoClient(os.getenv("MONGO_URI"))
+mongo_uri = os.environ.get("MONGO_URI")
+if not mongo_uri:
+    raise RuntimeError("❌ MONGO_URI nicht gesetzt – bitte als Umgebungsvariable definieren.")
+client = MongoClient(mongo_uri)
 
 db = client["ukraineBiasDB"]
 collection = db["labelled_augmentedCount_tweets_training"]
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 
-# 🔍 RoBERTa Modell vorbereiten
-BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "model-final"
-tokenizer = AutoTokenizer.from_pretrained(
-    str(MODEL_PATH), local_files_only=True)
-model = AutoModelForSequenceClassification.from_pretrained(
-    str(MODEL_PATH), local_files_only=True)
+MODEL_PATH = os.environ.get("MODEL_PATH", "model-final")
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, local_files_only=True)
 model.eval()
 
 label_map = {0: "pro-Russland", 1: "neutral", 2: "pro-Ukraine"}
 
-# 🌐 Frontend ausliefern
-
-
 @app.route("/")
 def serve_index():
     return send_from_directory(os.path.join(app.static_folder), "index.html")
-
-# 🔁 Prediction-Endpunkt
-
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -60,9 +51,6 @@ def predict():
         "label": prediction,
         "confidence": confidence
     })
-
-# 📊 Bias-Score-Endpunkt
-
 
 @app.route("/bias_score")
 def get_bias_score():
@@ -91,7 +79,6 @@ def get_bias_score():
         logging.info("Fehler in /bias_score: %s", e)
         return jsonify({"error": str(e)}), 500
 
-# 📈 Label-Verteilung-Endpunkt    
 @app.route("/label_distribution")
 def label_distribution():
     try:
@@ -105,7 +92,6 @@ def label_distribution():
         logging.info("Fehler in /label_distribution: %s", e)
         return jsonify({"error": str(e)}), 500    
 
-# 📊 Training-Metadaten-Endpunkt
 @app.route("/training_metadata")
 def training_metadata():
     metadata = {
@@ -118,7 +104,6 @@ def training_metadata():
     }
     return jsonify(metadata)   
 
-# 📋 Zufälliger Trainings-Tweet-Endpunkt
 @app.route("/random_training_example")
 def random_training_example():
     try:

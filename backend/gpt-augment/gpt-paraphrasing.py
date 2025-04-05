@@ -1,21 +1,18 @@
-"""
-Modul zur GPT-basierten Paraphrasierung von geopolitischen Tweets mit Augmentation in MongoDB.
-"""
-
 # GPT Augmentation mit MongoDB
 import os
 import time
 import logging
-from dotenv import load_dotenv
 from pymongo import MongoClient
 from openai import OpenAI
 
 # 🔐 API & DB-Verbindung
-load_dotenv()
-logging.basicConfig(level=logging.INFO)
+# Hinweis: Umgebungsvariablen werden über Docker Compose gesetzt. `.env`-Dateien nur für lokales Debugging.
 SLEEP_TIME = float(os.getenv("GPT_SLEEP_TIME", "1.5"))
 client_openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-client_mongo = MongoClient(os.getenv("MONGO_URI"))
+mongo_uri = os.getenv("MONGO_URI")
+if not mongo_uri:
+    raise RuntimeError("❌ MONGO_URI nicht gesetzt – bitte in .env eintragen oder via Compose übergeben.")
+client_mongo = MongoClient(mongo_uri)
 collection_in = client_mongo["ukraineBiasDB"]["labelled_tweets_training"]
 collection_out = client_mongo["ukraineBiasDB"]["labelled_augmentedCount_tweets_training"]
 
@@ -56,5 +53,8 @@ for i, doc in enumerate(originals):
 
 # Kombinieren & speichern
 combined = originals + augmented
-collection_out.insert_many(combined)
-logging.info("🚀 Gesamt gespeichert: %d Dokumente in 'labelled_augmentedCount_tweets_training'", len(combined))
+if combined:
+    collection_out.insert_many(combined)
+    logging.info("🚀 Gesamt gespeichert: %d Dokumente in 'labelled_augmentedCount_tweets_training'", len(combined))
+else:
+    logging.info("⚠️ Keine neuen Beispiele zum Einfügen vorhanden.")

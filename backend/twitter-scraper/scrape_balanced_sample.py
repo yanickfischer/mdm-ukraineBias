@@ -4,17 +4,15 @@ import logging
 from ntscraper import Nitter
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from dotenv import load_dotenv
 import os
 from datetime import datetime
 
 # 🔌 Verbindung zu MongoDB herstellen
 def connect_to_mongo():
-    load_dotenv()
     logging.basicConfig(level=logging.INFO)
     uri = os.getenv("MONGO_URI")
     if not uri:
-        raise ValueError("❌ MONGO_URI fehlt in .env-Datei!")
+        raise ValueError("❌ MONGO_URI nicht gesetzt – bitte via docker-compose.yaml oder Azure Konfiguration übergeben.")
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=3000)
         client.admin.command("ping")

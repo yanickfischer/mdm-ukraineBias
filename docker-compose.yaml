@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  gpt-augment:
+    build: ./backend/gpt-augment
+    container_name: gpt-augment
+    depends_on:
+      - mongo
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_URI: ${MONGO_URI}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      NITTER_INSTANCE: ${NITTER_INSTANCE}
+      MODEL_PATH: ${MODEL_PATH}
+      GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
+      GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
+
+volumes:
+  mongo-data:
