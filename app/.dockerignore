@@ -1,7 +1,0 @@
-__pycache__/
-*.pyc
-*.pkl
-.venv/
-.ipynb_checkpoints/
-.env
-requirements.in

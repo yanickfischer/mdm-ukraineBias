@@ -23,5 +23,46 @@ services:
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
+  gpt-filter-sentiment:
+    build: ./backend/gpt-filter-sentiment
+    container_name: gpt-filter-sentiment
+    depends_on:
+      - mongo
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_URI: ${MONGO_URI}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      NITTER_INSTANCE: ${NITTER_INSTANCE}
+      MODEL_PATH: ${MODEL_PATH}
+      GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
+      GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
+
+  model-trainer:
+    build: ./backend/model-trainer
+    container_name: model-trainer
+    depends_on:
+      - mongo
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_URI: ${MONGO_URI}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      NITTER_INSTANCE: ${NITTER_INSTANCE}
+      MODEL_PATH: ${MODEL_PATH}
+      GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
+      GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
+
+  twitter-scraper:
+    build:
+      context: ./backend/twitter-scraper
+      dockerfile: dockerfile
+    container_name: twitter-scraper
+    depends_on:
+      - mongo
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_URI: ${MONGO_URI}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      NITTER_INSTANCE: ${NITTER_INSTANCE}
+
 volumes:
   mongo-data:
