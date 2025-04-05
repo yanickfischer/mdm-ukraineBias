@@ -1,23 +1,26 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
+# Basis-Image: kleiner Python-Image
 FROM python:3-slim
 
-# Keeps Python from generating .pyc files in the container
+# Umgebungsvariablen für saubere Logs und keine .pyc-Files
 ENV PYTHONDONTWRITEBYTECODE=1
-
-# Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# Install pip requirements
+# Setze das Arbeitsverzeichnis im Container
+WORKDIR /app
+
+# Kopiere nur das requirements-File zuerst (für Layer Caching)
 COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
 
-WORKDIR /backend/gpt-filter-sentiment
-COPY . /backend/gpt-filter-sentiment
+# Installiere Abhängigkeiten
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+# Kopiere den Rest des Codes
+COPY . .
+
+# Erstelle einen nicht-root User und gib ihm Zugriff auf das App-Verzeichnis
+RUN adduser --disabled-password --gecos "" --uid 5678 appuser \
+    && chown -R appuser /app
 USER appuser
 
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+# Standardbefehl zum Ausführen des Moduls
 CMD ["python", "gpt-filter-sentiment.py"]
