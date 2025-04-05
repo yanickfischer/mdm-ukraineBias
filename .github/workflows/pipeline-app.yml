@@ -1,0 +1,24 @@
+name: App Pipeline
+
+on:
+  push:
+    paths:
+      - 'app/**'
+  workflow_dispatch:
+
+jobs:
+  run-app:
+    runs-on: ubuntu-latest
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🏗️ Build App Docker Image
+        run: docker build -t app ./app
+
+      - name: 🚀 Run App
+        run: docker run --rm -e MONGO_URI=$MONGO_URI -e OPENAI_API_KEY=$OPENAI_API_KEY app

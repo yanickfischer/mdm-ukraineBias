@@ -1,0 +1,23 @@
+name: Scraper Pipeline
+
+on:
+  push:
+    paths:
+      - 'backend/data-collect/scraper/**'
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🏗️ Build Docker Image
+        run: docker build -t twitter-scraper ./backend/data-collect/scraper
+
+      - name: 🚀 Run Scraper
+        run: docker run --rm -e MONGO_URI=$MONGO_URI twitter-scraper

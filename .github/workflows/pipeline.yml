@@ -1,4 +1,4 @@
-name: UkraineBias CI/CD
+"""name: UkraineBias CI/CD
 
 on:
   push:
@@ -79,4 +79,4 @@ jobs:
 
       # Deployment zur Azure App (später hinzufügen)
       # - name: 🚀 Deploy to Azure
-      #   run: az webapp up ...
+      #   run: az webapp up ..."""

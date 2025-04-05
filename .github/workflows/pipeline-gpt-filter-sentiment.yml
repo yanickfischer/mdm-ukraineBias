@@ -1,0 +1,28 @@
+name: GPT Filter Pipeline
+
+on:
+  push:
+    paths:
+      - 'backend/gpt-filter-sentiment/**'
+  workflow_dispatch:
+
+jobs:
+  run-gpt-filter:
+    runs-on: ubuntu-latest
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🏗️ Build Docker Image
+        run: docker build -t gpt-filter ./backend/gpt-filter-sentiment
+
+      - name: 🚀 Run GPT Filter
+        run: |
+          docker run --rm \
+            -e MONGO_URI=$MONGO_URI \
+            -e OPENAI_API_KEY=$OPENAI_API_KEY \
+            gpt-filter
