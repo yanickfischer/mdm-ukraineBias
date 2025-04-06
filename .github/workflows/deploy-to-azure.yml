@@ -17,6 +17,9 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: Debug Compose File
+      run: cat docker-compose.yaml
+
     - name: Deploy multi-container app to Azure using Compose
       run: |
         az webapp config container set \

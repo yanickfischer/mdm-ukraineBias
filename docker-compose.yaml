@@ -75,3 +75,11 @@ services:
     container_name: mongo
     ports:
       - "27017:27017"
+
+  news-scraper:
+    image: yanickpfischer/kyiv-news-scraper:latest
+    container_name: news-scraper
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: ${MONGO_URI}
