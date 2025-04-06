@@ -1,9 +1,6 @@
 name: Model Training Pipeline
 
 on:
-  push:
-    paths:
-      - 'backend/model-trainer/**'
   workflow_dispatch:
 
 jobs:
