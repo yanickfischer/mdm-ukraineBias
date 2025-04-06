@@ -1,16 +1,8 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo:6.0
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
   gpt-augment:
-    build: ./backend/gpt-augment
+    image: yanickpfischer/ukrainebias-gpt-augment:latest
     container_name: gpt-augment
     depends_on:
       - mongo
@@ -24,7 +16,7 @@ services:
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
   gpt-filter-sentiment:
-    build: ./backend/gpt-filter-sentiment
+    image: yanickpfischer/ukrainebias-gpt-filter-sentiment:latest
     container_name: gpt-filter-sentiment
     depends_on:
       - mongo
@@ -38,7 +30,7 @@ services:
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
   model-trainer:
-    build: ./backend/model-trainer
+    image: yanickpfischer/ukrainebias-model-trainer:latest
     container_name: model-trainer
     depends_on:
       - mongo
@@ -52,7 +44,7 @@ services:
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
   twitter-scraper:
-    build: ./backend/twitter-scraper
+    image: yanickpfischer/ukrainebias-twitter-scraper:latest
     container_name: twitter-scraper
     depends_on:
       - mongo
@@ -63,7 +55,7 @@ services:
       NITTER_INSTANCE: ${NITTER_INSTANCE}
 
   app:
-    build: ./app
+    image: yanickpfischer/ukrainebias-app:latest
     container_name: app
     depends_on:
       - mongo
@@ -78,5 +70,8 @@ services:
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
-volumes:
-  mongo-data:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
