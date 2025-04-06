@@ -12,15 +12,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Azure Login via Publish Profile
-      uses: azure/webapps-deploy@v2
+    - name: Azure Login via Service Principal
+      uses: azure/login@v1
       with:
-        app-name: mdm-ukraineBias-app
-        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        images: |
-          yanickpfischer/ukrainebias-app:latest
-          yanickpfischer/ukrainebias-twitter-scraper:latest
-          yanickpfischer/ukrainebias-gpt-augment:latest
-          yanickpfischer/ukrainebias-gpt-filter-sentiment:latest
-          yanickpfischer/ukrainebias-model-trainer:latest
-        configuration-file: docker-compose.yaml
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy multi-container app to Azure using Compose
+      run: |
+        az webapp config container set \
+          --name mdm-ukraineBias-app \
+          --resource-group mdm-ukraineBias-rg \
+          --multicontainer-config-type compose \
+          --multicontainer-config-file docker-compose.azure.yml
