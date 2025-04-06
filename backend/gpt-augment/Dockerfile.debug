@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /gpt-augment
+
+# Copy local source code to container
+COPY . /gpt-augment
+
+# Install dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt
+
+# Debug: ENV Variablen + Verzeichnisstruktur anzeigen
+CMD ["sh", "-c", "\
+  echo '🔍 ENV VARS:' && env && \
+  echo '📁 FILES:' && ls -la /gpt-augment && \
+  echo '🐍 Python Version:' && python --version && \
+  echo '🏃 Starte gpt-paraphrasing.py...' && \
+  python gpt-paraphrasing.py \
+"]
