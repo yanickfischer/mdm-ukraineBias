@@ -43,17 +43,6 @@ services:
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
 
-  twitter-scraper:
-    image: yanickpfischer/ukrainebias-twitter-scraper:latest
-    container_name: twitter-scraper
-    depends_on:
-      - mongo
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      MONGO_URI: ${MONGO_URI}
-      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
-      NITTER_INSTANCE: ${NITTER_INSTANCE}
-
   app:
     image: yanickpfischer/ukrainebias-app:latest
     container_name: app
