@@ -1,9 +1,6 @@
 name: GPT Augment Pipeline
 
 on:
-  push:
-    paths:
-      - 'backend/gpt-augment/**'
   workflow_dispatch:
 
 jobs:

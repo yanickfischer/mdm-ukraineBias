@@ -1,8 +1,7 @@
 name: Deploy Docker Compose to Azure Web App
 
 on:
-  push:
-    branches: [ main ]  # oder passe an deinen Haupt-Branch an
+  workflow_dispatch:
 
 jobs:
   deploy:

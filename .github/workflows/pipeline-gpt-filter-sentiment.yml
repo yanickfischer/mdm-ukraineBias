@@ -1,9 +1,6 @@
 name: GPT Filter Pipeline
 
 on:
-  push:
-    paths:
-      - 'backend/gpt-filter-sentiment/**'
   workflow_dispatch:
 
 jobs:

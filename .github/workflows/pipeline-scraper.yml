@@ -1,9 +1,6 @@
 name: Scraper Pipeline
 
 on:
-  push:
-    paths:
-      - 'backend/data-collect/scraper/**'
   workflow_dispatch:
 
 jobs:
