@@ -121,5 +121,15 @@ def random_training_example():
         logging.info("Fehler in /random_training_example: %s", e)
         return jsonify({"error": str(e)}), 500
 
+@app.route("/news")
+def get_news():
+    try:
+        news_cursor = db["ukraine-news"].find({}, {"title": 1, "_id": 0}).limit(18)
+        news_list = list(news_cursor)
+        return jsonify(news_list)
+    except Exception as e:
+        logging.info("Fehler in /news: %s", e)
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
