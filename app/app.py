@@ -15,18 +15,27 @@ client = MongoClient(mongo_uri)
 db = client["ukraineBiasDB"]
 collection = db["labelled_augmentedCount_tweets_training"]
 
-app = Flask(__name__, static_folder="frontend", static_url_path="")
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODEL_PATH = os.environ.get("MODEL_PATH", "model-final")
+model_path_raw = os.environ.get("MODEL_PATH", str(BASE_DIR / "app" / "model-final"))
+
+MODEL_PATH = Path(model_path_raw).expanduser().resolve()
+
+if not MODEL_PATH.exists():
+    raise RuntimeError(f"❌ Modellpfad nicht gefunden: {MODEL_PATH}")
+
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, local_files_only=True)
 model.eval()
 
 label_map = {0: "pro-Russland", 1: "neutral", 2: "pro-Ukraine"}
 
+static_dir = BASE_DIR / "app" / "frontend"
+app = Flask(__name__, static_folder=str(static_dir))
+
 @app.route("/")
 def serve_index():
-    return send_from_directory(os.path.join(app.static_folder), "index.html")
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
