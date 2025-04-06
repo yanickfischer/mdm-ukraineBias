@@ -66,7 +66,7 @@ dill==0.3.8
     #   multiprocess
 distro==1.9.0
     # via openai
-dnspython==2.7.0
+dnspython==1.16.0
     # via pymongo
 evaluate==0.4.3
     # via -r requirements.in
@@ -244,7 +244,7 @@ pygments==2.19.1
     # via
     #   ipython
     #   ipython-pygments-lexers
-pymongo==4.11.3
+pymongo[srv]==3.12
     # via -r requirements.in
 pyparsing==3.2.3
     # via matplotlib
