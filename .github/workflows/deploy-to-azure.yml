@@ -23,4 +23,4 @@ jobs:
           --name mdm-ukraineBias-app \
           --resource-group mdm-ukraineBias-rg \
           --multicontainer-config-type compose \
-          --multicontainer-config-file docker-compose.yml
+          --multicontainer-config-file ./docker-compose.yml
