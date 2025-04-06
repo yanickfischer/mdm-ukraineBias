@@ -27,7 +27,7 @@ if __name__ == "__main__":
         exit(1)
 
     base_path = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(base_path, "..", "kyiv_news.json")
+    json_path = os.path.join(base_path, "kyiv_news.json")
     with open(json_path, "r", encoding="utf-8") as file:
         articles = json.load(file)
 
