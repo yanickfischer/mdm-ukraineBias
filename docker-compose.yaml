@@ -14,8 +14,6 @@ services:
       MODEL_PATH: /app/model-final
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
-    volumes:
-      - ./app/model-final:/app/model-final
 
   gpt-filter-sentiment:
     image: yanickpfischer/ukrainebias-gpt-filter-sentiment:latest
@@ -30,8 +28,6 @@ services:
       MODEL_PATH: /app/model-final
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
-    volumes:
-      - ./app/model-final:/app/model-final
 
   model-trainer:
     image: yanickpfischer/ukrainebias-model-trainer:latest
@@ -46,8 +42,6 @@ services:
       MODEL_PATH: /app/model-final
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
-    volumes:
-      - ./app/model-final:/app/model-final
 
   app:
     image: yanickpfischer/ukrainebias-app:latest
@@ -64,8 +58,6 @@ services:
       MODEL_PATH: /app/model-final
       GPT_BATCH_SIZE: ${GPT_BATCH_SIZE}
       GPT_SLEEP_TIME: ${GPT_SLEEP_TIME}
-    volumes:
-      - ./app/model-final:/app/model-final
 
   mongo:
     image: mongo:6.0
