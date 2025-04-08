@@ -176,11 +176,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypircapp/model-final/model.safetensors
-app/frontend/index.html
-app/frontend/script.js
-app/frontend/style.css
-frontend/index.html
-frontend/script.js
-frontend/style.css
 .DS_Store
 .DS_Store

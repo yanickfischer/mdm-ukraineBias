@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>🇺🇦 UkraineBias Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">🇺🇦 UkraineBias Analyzer</h1>
+
+        <div class="form-group">
+            <label for="tweetInput">Gib einen Tweet-Text ein:</label>
+            <textarea class="form-control" id="tweetInput" rows="3"
+                placeholder="z.B. Russia is defending itself from NATO..."></textarea>
+        </div>
+        <button class="btn btn-primary mb-3" onclick="analyzeSentiment()">Analysieren</button>
+
+        <div id="resultBox" class="card d-none">
+            <div class="card-body">
+                <h5 class="card-title">Ergebnis</h5>
+                <p class="card-text">
+                    <strong>Bias:</strong> <span id="biasLabel"></span><br>
+                    <strong>Confidence:</strong> <span id="confidence"></span>
+                </p>
+            </div>
+        </div>
+
+        <hr>
+        <h5 class="mt-4">📊 Bias der Trainingsdaten</h5>
+        <div class="d-flex justify-content-between">
+            <span>🇷🇺</span>
+            <span>⚖️</span>
+            <span>🇺🇦</span>
+        </div>
+        <div class="bias-bar my-2" id="biasBar">
+            <div class="bias-indicator" id="biasIndicator"></div>
+        </div>
+        <small id="biasScoreLabel"></small>
+        <hr>
+        <h5 class="mt-4">📊 Verteilung der Trainingsdaten</h5>
+        <canvas id="labelChart" width="400" height="200"></canvas>
+        <hr>
+        <h5 class="mt-4">🧠 Trainings-Metadaten</h5>
+        <ul id="metadataList" class="list-group mb-4">
+            <li class="list-group-item"><strong>Modellname:</strong> <span id="metaModel"></span></li>
+            <li class="list-group-item"><strong>Trainingsdatum:</strong> <span id="metaDate"></span></li>
+            <li class="list-group-item"><strong>Scraping-Tweets nach GPT-Relevanz-Filtering:</strong> <span id="metaOriginal"></span></li>
+            <li class="list-group-item"><strong>Tweets nach GPT-Augmentation:</strong> <span id="metaAugmented"></span></li>
+            <li class="list-group-item"><strong>Validierungsgenauigkeit:</strong> <span id="metaAcc"></span></li>
+            <li class="list-group-item"><strong>Modellgröße:</strong> <span id="metaSize"></span></li>
+        </ul>
+        <hr>
+        <h5 class="mt-4">🎲 Zufälliges Trainingsbeispiel</h5>
+        <button class="btn btn-secondary mb-3" id="loadExampleBtn">Zufälligen Tweet anzeigen</button>
+
+        <div id="exampleBox" class="card d-none">
+            <div class="card-body">
+                <p class="card-text"><strong>Text:</strong> <span id="exampleText"></span></p>
+                <p class="card-text"><strong>Label:</strong> <span id="exampleLabel"></span></p>
+            </div>
+        </div>
+        <hr>
+        <h5 class="mt-4">📰 Ukraine News (aus MongoDB)</h5>
+        <div class="news-box border p-3" style="max-height: 250px; overflow-y: auto;">
+            <ul id="newsList" class="list-group">
+                <!-- News-Elemente werden per JS geladen -->
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
