@@ -1,3 +1,7 @@
+### ℹ️ Update nach Twitter Restriktion
+Aufgrund einer Änderung bei Twitter funktioniert das Modul Twitter-Scraper leider aktuell nicht mehr. Dos Modell konnte aber mit realen Daten trainiert werden. 
+Anstelle des Twitter-Scrapers wurde ein zusätzliches Scraping-Modul entwickelt, welches aktuelle News von https://kyivindependent.com/tag/ukraine scrapt und auf der Webseite bereitstellt.
+
 # 🇺🇦 SentimentAnalyzer – Ukraine-Krieg auf Twitter verstehen
 
 ## 🎯 Motivation
